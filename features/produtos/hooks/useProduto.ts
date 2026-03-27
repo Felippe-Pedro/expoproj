@@ -1,14 +1,14 @@
-import api from "@/services/api"; // Sua instância do Axios
+import api from "@/services/api";
 import { Produto } from "@/types/produto";
 import { useQuery } from "@tanstack/react-query";
 
-export function useProduto() {
-  return useQuery<Produto[]>({
-    queryKey: ["produtos"], // Chave do cache
+export function useProduto(id: string) {
+  return useQuery<Produto>({
+    queryKey: ["produto", id],
     queryFn: async () => {
-      const { data }: { data: Produto[] } = await api.get("/produtos");
+      const { data }: { data: Produto } = await api.get(`/produtos/${id}`);
       return data;
     },
-    staleTime: 1000 * 60 * 5, // Tempo com cache válido: 5 minutos - só consulta a api depois que os dados ficam obsoletos (> 5 min)
+    enabled: !!id, // Só dispara a busca se houver um ID
   });
 }

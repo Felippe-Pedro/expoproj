@@ -1,10 +1,10 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { Produto } from "@/types/produto";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { Button, TextInput } from "react-native";
 import * as yup from "yup";
+import { useCreateProduto } from "./hooks/useCreateProduto";
 
 // INSTALAR: npx expo install react-hook-form yup @hookform/resolvers
 
@@ -40,9 +40,17 @@ export default function ProdutoCreateScreen() {
     resolver: yupResolver(schema),
   });
 
+  const {
+    mutate,
+    //isPending
+  } = useCreateProduto();
+
   // Chamar função da API para inserir novo produto
   const onSubmit = (data: any) => {
-    const produto: Produto = { id: "0", nome: data.nome, preco: data.preco };
+    mutate({
+      nome: data.nome,
+      preco: parseFloat(data.preco.replace(",", ".")),
+    });
   };
 
   return (

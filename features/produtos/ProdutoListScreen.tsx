@@ -1,8 +1,15 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useRouter } from "expo-router";
-import { FlatList, Pressable, StyleSheet } from "react-native";
-import { useProduto } from "./hooks/useProduto";
+import {
+    ActivityIndicator,
+    FlatList,
+    Pressable,
+    StyleSheet,
+    TouchableOpacity,
+} from "react-native";
+
+import { useProdutos } from "./hooks/useProdutos";
 
 export default function ProdutoListScreen() {
   // Listagem de produtos mockada - futuramente virá do backend via API
@@ -12,12 +19,50 @@ export default function ProdutoListScreen() {
   //     { id: "3", nome: "Produto 3", preco: 30.99 },
   //   ]);
 
-  const { data: listaProduto } = useProduto();
-  //const { data, isLoading, error, refetch, isRefetching } = useProduto();
-
-  console.log(listaProduto);
-
   const router = useRouter(); // navegação entre telas usando expo-router
+
+  const {
+    data: listaProduto,
+    isLoading,
+    error,
+    refetch,
+    //isRefetching,
+  } = useProdutos();
+
+  // 1. Estado de Carregamento Inicial
+  if (isLoading) {
+    return (
+      <ThemedView>
+        <ActivityIndicator size="large" color="#007bff" />
+        <ThemedText>Carregando produtos...</ThemedText>
+      </ThemedView>
+    );
+  }
+
+  // 2. Estado de Erro (Tratamento de 401 já foi feito no Interceptor do Axios)
+  if (error) {
+    return (
+      <ThemedView>
+        <ThemedText>Ocorreu um erro ao buscar os produtos.</ThemedText>
+        <TouchableOpacity onPress={() => refetch()}>
+          <ThemedText>Tentar Novamente</ThemedText>
+        </TouchableOpacity>
+      </ThemedView>
+    );
+  }
+
+  // 3. Estado Vazio (Caso a API retorne um array vazio [])
+  if (!listaProduto || listaProduto.length === 0) {
+    return (
+      <ThemedView>
+        <ThemedText>Nenhum produto cadastrado.</ThemedText>
+      </ThemedView>
+    );
+  }
+
+  //console.log(listaProduto);
+
+  // 4. Renderização da Lista (Performance com FlatList)
   return (
     <ThemedView style={{ flex: 1, marginTop: 20, alignItems: "center" }}>
       <ThemedText>Lista de Produtos</ThemedText>
@@ -34,7 +79,7 @@ export default function ProdutoListScreen() {
         renderItem={({ item }) => (
           <ThemedView style={styles.listaItems}>
             <ThemedText style={{ marginTop: 10, color: "#000" }}>
-              {item.nome} - R$ {item.preco.toFixed(2)}
+              {item.nome} - R$ {item.preco.toString().replace(",", ".")}
             </ThemedText>
             <Pressable
               onPress={() =>
