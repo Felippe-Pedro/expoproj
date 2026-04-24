@@ -1,15 +1,23 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { useAccelerometer } from "./hooks/useAccelerometer";
+import { useAcelerometro } from "./hooks/useAcelerometro";
 
 export default function AcelerometroScreen() {
   // Consumindo o hook com intervalo de 200ms
-  const { data, methods } = useAccelerometer(200);
+  const { data, isListening, methods } = useAcelerometro(200);
 
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>Acelerômetro</ThemedText>
+      <ThemedText style={{ marginBottom: 10 }}>
+        Status:{" "}
+        <ThemedText
+          style={{ fontWeight: "bold", color: isListening ? "green" : "red" }}
+        >
+          {isListening ? "Ativo" : "Inativo"}
+        </ThemedText>
+      </ThemedText>
 
       <ThemedView style={styles.card}>
         <ThemedText style={styles.label}>

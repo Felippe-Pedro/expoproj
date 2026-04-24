@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 // updateInterval é o intervalo em milissegundos para atualização dos dados do acelerômetro
 // Subscription é armazenada em um ref para evitar re-renderizações desnecessárias
 // isListening é um estado booleano para indicar se o acelerômetro está ativo ou não
-export const useAccelerometer = (updateInterval = 100) => {
+export const useAcelerometro = (updateInterval = 100) => {
   const [data, setData] = useState({ x: 0, y: 0, z: 0 });
   const subscription = useRef<any>(null);
   const [isListening, setIsListening] = useState(false);
