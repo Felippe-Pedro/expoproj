@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "axios"; // npm install axios
 // import * as SecureStore from 'expo-secure-store';
 // import { router } from 'expo-router';
 
