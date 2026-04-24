@@ -1,3 +1,5 @@
+// ATENÇÃO: Instalar o pacote expo-sensors para acessar os sensores do dispositivo, incluindo o acelerômetro
+// usar: mpx expo install expo-sensors
 import { Accelerometer } from "expo-sensors";
 import { useCallback, useEffect, useRef, useState } from "react";
 
