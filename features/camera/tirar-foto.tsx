@@ -7,10 +7,18 @@ import {
   useCameraPermissions,
 } from "expo-camera";
 import React, { useRef } from "react";
-import { ActivityIndicator, Alert, Button, StyleSheet } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Button,
+  Linking,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 // Importe o tipo correto para a referência do componente CameraView
 type CameraViewRef = React.ComponentRef<typeof CameraView>;
@@ -58,27 +66,49 @@ const TirarFoto: React.FC<ChildProps> = ({ setURI, setBase64 }) => {
   }
 
   if (!permission) {
-    // Carregando status da permissão
     return (
       <ThemedView style={styles.containerCenter}>
         <ActivityIndicator size="large" color="#007AFF" />
-        <ThemedText style={styles.text}>Verificando permissões...</ThemedText>
+        <ThemedText style={styles.textLoading}>
+          Sincronizando câmera...
+        </ThemedText>
       </ThemedView>
     );
   }
 
   if (!permission.granted) {
-    // Permissão negada ou não solicitada
     return (
       <ThemedView style={styles.containerCenter}>
-        <ThemedText style={styles.textPermissionDenied}>
-          Acesso à câmera é necessário!
+        {/* Ícone visual ajuda na identificação rápida do erro */}
+        <MaterialIcons name="camera-alt" size={64} color="#ccc" />
+
+        <ThemedText style={styles.titlePermission}>
+          Câmera Desabilitada
         </ThemedText>
-        <Button
-          onPress={requestPermission}
-          title="Conceder Permissão"
-          color="#FF9800"
-        />
+
+        <ThemedText style={styles.descriptionPermission}>
+          Para capturar fotos dos produtos e enviar para a API, precisamos de
+          acesso à sua câmera.
+        </ThemedText>
+
+        <ThemedView style={styles.buttonGroup}>
+          <Button
+            onPress={requestPermission}
+            title="Tentar Novamente"
+            disabled={!permission.canAskAgain} // Bloqueia se o sistema não permitir mais o pop-up
+          />
+
+          {!permission.canAskAgain && (
+            <TouchableOpacity
+              onPress={() => Linking.openSettings()}
+              style={styles.linkButton}
+            >
+              <ThemedText style={styles.linkText}>
+                Habilitar nas Configurações
+              </ThemedText>
+            </TouchableOpacity>
+          )}
+        </ThemedView>
       </ThemedView>
     );
   }
@@ -107,11 +137,45 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#f5f5f5",
   },
-  text: { fontSize: 16, marginBottom: 10, textAlign: "center", color: "#333" },
-  textPermissionDenied: {
-    fontSize: 18,
-    color: "red",
-    marginBottom: 15,
+  titlePermission: {
+    fontSize: 22,
     fontWeight: "bold",
+    marginTop: 20,
+    marginBottom: 10,
+    textAlign: "center",
   },
+  descriptionPermission: {
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: "center",
+    color: "#666",
+    marginBottom: 30,
+  },
+  textLoading: {
+    marginTop: 15,
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#666",
+  },
+  buttonGroup: {
+    width: "100%",
+    gap: 15, // Espaçamento moderno entre elementos (SDK 50+)
+  },
+  linkButton: {
+    padding: 10,
+    alignItems: "center",
+  },
+  linkText: {
+    color: "#007AFF",
+    fontSize: 14,
+    fontWeight: "600",
+    textDecorationLine: "underline",
+  },
+  // text: { fontSize: 16, marginBottom: 10, textAlign: "center", color: "#333" },
+  // textPermissionDenied: {
+  //   fontSize: 18,
+  //   color: "red",
+  //   marginBottom: 15,
+  //   fontWeight: "bold",
+  // },
 });
