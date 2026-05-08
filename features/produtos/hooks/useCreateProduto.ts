@@ -8,7 +8,11 @@ export function useCreateProduto() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (newProduto: { nome: string; preco: number }) => {
+    mutationFn: async (newProduto: {
+      nome: string;
+      preco: number;
+      fotoBase64: string;
+    }) => {
       const { data }: { data: Produto } = await api.post(
         "/produtos",
         newProduto,

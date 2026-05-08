@@ -1,9 +1,11 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Button, TextInput } from "react-native";
+import { Button, StyleSheet, TextInput } from "react-native";
 import * as yup from "yup";
+import TirarFoto from "../camera/tirar-foto";
 import { useCreateProduto } from "./hooks/useCreateProduto";
 
 // INSTALAR: npx expo install react-hook-form yup @hookform/resolvers
@@ -50,11 +52,15 @@ export default function ProdutoCreateScreen() {
     mutate({
       nome: data.nome,
       preco: parseFloat(data.preco.replace(",", ".")),
+      fotoBase64: base64, // Enviar a foto em base64
     });
   };
 
+  const [urifoto, setUrifoto] = useState("");
+  const [base64, setBase64] = useState("");
+
   return (
-    <ThemedView>
+    <ThemedView style={styles.container}>
       {/* 2. Campo Nome */}
       <Controller
         control={control}
@@ -84,7 +90,22 @@ export default function ProdutoCreateScreen() {
         <ThemedText style={{ color: "red" }}>{errors.preco.message}</ThemedText>
       )}
 
-      <Button title="Salvar" onPress={handleSubmit(onSubmit)} />
+      <TirarFoto setURI={setUrifoto} setBase64={setBase64} />
+      {/* <ThemedText>URI da Foto: {urifoto}</ThemedText>
+      <ThemedText>Base64 da Foto: {base64.substring(0, 20)}</ThemedText> */}
+
+      <ThemedView style={{ marginTop: 20 }}>
+        <Button title="Salvar" onPress={handleSubmit(onSubmit)} />
+      </ThemedView>
     </ThemedView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "flex-start",
+    padding: 20,
+    backgroundColor: "#f5f5f5",
+  },
+});

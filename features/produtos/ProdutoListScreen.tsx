@@ -2,13 +2,14 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useRouter } from "expo-router";
 import {
-    ActivityIndicator,
-    FlatList,
-    Pressable,
-    StyleSheet,
-    TouchableOpacity,
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 
+import { Image } from "expo-image";
 import { useProdutos } from "./hooks/useProdutos";
 
 export default function ProdutoListScreen() {
@@ -73,13 +74,21 @@ export default function ProdutoListScreen() {
         <ThemedText>Novo Produto</ThemedText>
       </Pressable>
       <FlatList // lista de produtos usando FlatList para melhor performance em listas longas
-        style={styles.lista}
+        // style={styles.lista}
         data={listaProduto}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <ThemedView style={styles.listaItems}>
             <ThemedText style={{ marginTop: 10, color: "#000" }}>
               {item.nome} - R$ {item.preco.toString().replace(",", ".")}
+              {item.fotoBase64 && (
+                <ThemedView>
+                  <Image
+                    source={{ uri: `data:image/jpg;base64,${item.fotoBase64}` }}
+                    style={styles.image}
+                  />
+                </ThemedView>
+              )}
             </ThemedText>
             <Pressable
               onPress={() =>
@@ -128,16 +137,23 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: 120,
   },
-  lista: {
-    width: "100%",
-    paddingHorizontal: 20,
-    marginTop: 20,
+  image: {
+    // ESSENCIAL: Defina o tamanho da imagem!
+    width: 150,
+    height: 150,
+    resizeMode: "cover", //'contain', // Ajusta como a imagem preenche o espaço
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
   listaItems: {
-    flexDirection: "row",
+    backgroundColor: "#fff",
+    padding: 15,
+    marginBottom: 10,
     borderRadius: 8,
-    elevation: 2, // Shadow no Android
-    shadowColor: "#000", // Shadow no iOS
-    padding: 0,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
 });
